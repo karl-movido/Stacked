@@ -1,7 +1,7 @@
 :root {
-	--bg: #fdfcdc;
+	--bg: #eff6e0;
 	--surface: #f8f9fa;
-	--border: #ccc5b9;
+	--border: #c9ccc4;
 	--text: #1b263b;
 	--text-soft: #2a3c5c;
 	--text-muted: #6e7e8d;
@@ -115,8 +115,60 @@ header {
 
 .btn-primary {
 	background: var(--primary);
-	padding: 0.6rem 1.4rem;
+	padding: 0.8rem 1.4rem;
 	border-radius: 2rem;
 	color: var(--bg);
 	font-weight: 600;
+}
+
+.btn-ghost {
+	background: transparent;
+	padding: 0.8rem 1.4rem;
+	border: 1px solid var(--border);
+	border-radius: 2rem;
+	font-weight: 600;
+	color: var(--text);
+}
+
+.add-panel-inner {
+	max-width: 1200px;
+	margin: 0 auto;
+	display: flex;
+	align-items: flex-end;
+	gap: 1rem;
+	padding: 2rem;
+	border-bottom: 1px solid var(--border);
+}
+
+.field:nth-of-type(1) {
+	flex: 2;
+}
+
+.field:nth-of-type(2) {
+	width: 300px;
+}
+
+.field:nth-of-type(3) {
+	width: 160px;
+}
+
+.field label {
+	display: block;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	font-size: 0.8rem;
+	letter-spacing: 0.08em;
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+}
+
+.field input {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	padding: 0.7rem 1rem;
+	border-radius: 0.25rem;
+	outline: none;
+	font-size: 1rem;
+	color: var(--text);
+	width: 100%;
 }
