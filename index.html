@@ -77,15 +77,18 @@
 		</div>
 
 		<nav class="filter-bar">
-			<button class="filter-tab active">All books <span class="count">6</span></button>
-			<button class="filter-tab active">Favorites <span class="count">3</span></button>
-			<button class="filter-tab active">Reading <span class="count">2</span></button>
-			<button class="filter-tab active">To be read <span class="count">4</span></button>
+			<div class="filter-bar-inner">
+				<button class="filter-tab active">All books <span class="count">6</span></button>
+				<button class="filter-tab">Favorites <span class="count">3</span></button>
+				<button class="filter-tab">Reading <span class="count">2</span></button>
+				<button class="filter-tab">To be read <span class="count">4</span></button>
+			</div>
 		</nav>
 
 		<main>
 			<div class="shelf">
-				<article class="book-card">
+				<article class="book-card pinned">
+					<div class="pin-border"></div>
 					<div class="card-top">
 						<button class="edit-btn">
 							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -107,23 +110,27 @@
 						<p class="author"><span>by</span> Yoko Ogawa</p>
 						<div class="progress-wrap">
 							<div class="progress-label">
-								Page <input type="number" class="current-page-input" value="67" min="0" max="180" /> of 180 pages
+								Page
+								<span class="page-editor">
+									<button class="page-display" id="pageDisplay">67</button>
+									<input type="number" class="current-page-input hidden" id="pageInput" value="67" min="0" max="180" />
+								</span>
+								of 180 pages
 							</div>
 							<div class="progress-bar"><div class="progress-bar-fill" style="width: 37%"></div></div>
 						</div>
 						<div class="card-actions">
 							<button class="pin-btn">
 								<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-									<title xmlns="">bookmark-line</title>
-									<g fill="none" fill-rule="evenodd">
-										<path
-											d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"
-										/>
-										<path
-											fill="currentColor"
-											d="M4 5a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v16.028c0 1.22-1.38 1.93-2.372 1.221L12 18.229l-5.628 4.02c-.993.71-2.372 0-2.372-1.22zm3-1a1 1 0 0 0-1 1v15.057l5.128-3.663a1.5 1.5 0 0 1 1.744 0L18 20.057V5a1 1 0 0 0-1-1z"
-										/>
-									</g>
+									<title xmlns="">bookmark</title>
+									<path
+										fill="none"
+										stroke="currentColor"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"
+									/>
 								</svg>
 							</button>
 							<button class="done-btn">
@@ -140,11 +147,12 @@
 									</g>
 								</svg>
 							</button>
-							<button class="status-btn">To read</button>
+							<button class="status-btn to-read">To read</button>
 						</div>
 					</div>
 				</article>
 				<article class="book-card">
+					<div class="pin-border"></div>
 					<div class="card-top">
 						<button class="edit-btn">
 							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -166,7 +174,12 @@
 						<p class="author"><span>by</span> Andy Weir</p>
 						<div class="progress-wrap">
 							<div class="progress-label">
-								Page <input type="number" class="current-page-input" value="375" min="0" max="496" /> of 496 pages
+								Page
+								<span class="page-editor">
+									<button class="page-display">375</button>
+									<input type="number" class="current-page-input hidden" value="375" min="0" max="496" />
+								</span>
+								of 496 pages
 							</div>
 							<div class="progress-bar"><div class="progress-bar-fill" style="width: 75%"></div></div>
 						</div>
@@ -199,11 +212,12 @@
 									</g>
 								</svg>
 							</button>
-							<button class="status-btn">To read</button>
+							<button class="status-btn reading">Reading</button>
 						</div>
 					</div>
 				</article>
-				<article class="book-card">
+				<article class="book-card pinned">
+					<div class="pin-border"></div>
 					<div class="card-top">
 						<button class="edit-btn">
 							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -225,7 +239,12 @@
 						<p class="author"><span>by</span> Robert C. Martin</p>
 						<div class="progress-wrap">
 							<div class="progress-label">
-								Page <input type="number" class="current-page-input" value="390" min="0" max="464" /> of 464 pages
+								Page
+								<span class="page-editor">
+									<button class="page-display">390</button>
+									<input type="number" class="current-page-input hidden" value="390" min="0" max="464" />
+								</span>
+								of 464 pages
 							</div>
 							<div class="progress-bar"><div class="progress-bar-fill" style="width: 84%"></div></div>
 						</div>
@@ -258,11 +277,12 @@
 									</g>
 								</svg>
 							</button>
-							<button class="status-btn">To read</button>
+							<button class="status-btn reading">Reading</button>
 						</div>
 					</div>
 				</article>
-				<article class="book-card">
+				<article class="book-card done">
+					<div class="pin-border"></div>
 					<div class="card-top">
 						<button class="edit-btn">
 							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -284,9 +304,14 @@
 						<p class="author"><span>by</span> David Thomas</p>
 						<div class="progress-wrap">
 							<div class="progress-label">
-								Page <input type="number" class="current-page-input" value="264" min="0" max="352" /> of 352 pages
+								Page
+								<span class="page-editor">
+									<button class="page-display">352</button>
+									<input type="number" class="current-page-input hidden" value="264" min="0" max="352" />
+								</span>
+								of 352 pages
 							</div>
-							<div class="progress-bar"><div class="progress-bar-fill" style="width: 75%"></div></div>
+							<div class="progress-bar"><div class="progress-bar-fill done" style="width: 100%"></div></div>
 						</div>
 						<div class="card-actions">
 							<button class="pin-btn">
@@ -303,25 +328,12 @@
 									</g>
 								</svg>
 							</button>
-							<button class="done-btn">
-								<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-									<title xmlns="">check-line</title>
-									<g fill="none" fill-rule="evenodd">
-										<path
-											d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"
-										/>
-										<path
-											fill="currentColor"
-											d="M21.192 5.465a1 1 0 0 1 0 1.414L9.95 18.122a1.1 1.1 0 0 1-1.556 0l-5.586-5.586a1 1 0 1 1 1.415-1.415l4.95 4.95L19.777 5.465a1 1 0 0 1 1.414 0Z"
-										/>
-									</g>
-								</svg>
-							</button>
-							<button class="status-btn">To read</button>
+							<button class="status-btn done">Done</button>
 						</div>
 					</div>
 				</article>
 				<article class="book-card">
+					<div class="pin-border"></div>
 					<div class="card-top">
 						<button class="edit-btn">
 							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -343,7 +355,12 @@
 						<p class="author"><span>by</span> Robin Wall Kimmerer</p>
 						<div class="progress-wrap">
 							<div class="progress-label">
-								Page <input type="number" class="current-page-input" value="127" min="0" max="408" /> of 408 pages
+								Page
+								<span class="page-editor">
+									<button class="page-display">127</button>
+									<input type="number" class="current-page-input hidden" value="127" min="0" max="408" />
+								</span>
+								of 408 pages
 							</div>
 							<div class="progress-bar"><div class="progress-bar-fill" style="width: 31%"></div></div>
 						</div>
@@ -376,11 +393,12 @@
 									</g>
 								</svg>
 							</button>
-							<button class="status-btn">To read</button>
+							<button class="status-btn reading">Reading</button>
 						</div>
 					</div>
 				</article>
 				<article class="book-card">
+					<div class="pin-border"></div>
 					<div class="card-top">
 						<button class="edit-btn">
 							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -402,7 +420,12 @@
 						<p class="author"><span>by</span> Kazuo Ishiguro</p>
 						<div class="progress-wrap">
 							<div class="progress-label">
-								Page <input type="number" class="current-page-input" value="246" min="0" max="303" /> of 303 pages
+								Page
+								<span class="page-editor">
+									<button class="page-display">246</button>
+									<input type="number" class="current-page-input hidden" value="246" min="0" max="303" />
+								</span>
+								of 303 pages
 							</div>
 							<div class="progress-bar"><div class="progress-bar-fill" style="width: 81%"></div></div>
 						</div>
@@ -435,7 +458,7 @@
 									</g>
 								</svg>
 							</button>
-							<button class="status-btn">To read</button>
+							<button class="status-btn to-read">To read</button>
 						</div>
 					</div>
 				</article>
