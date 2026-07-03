@@ -141,7 +141,16 @@ header {
 }
 
 .add-panel {
-	display: none;
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+	transition: all 0.3s ease;
+}
+
+.add-panel.hidden {
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-20px);
 }
 
 .add-panel-inner {
@@ -154,18 +163,6 @@ header {
 	border-bottom: 1px solid var(--border);
 }
 
-.field:nth-of-type(1) {
-	flex: 2;
-}
-
-.field:nth-of-type(2) {
-	width: 300px;
-}
-
-.field:nth-of-type(3) {
-	width: 160px;
-}
-
 .field label {
 	display: block;
 	color: var(--text-muted);
@@ -176,19 +173,42 @@ header {
 	margin-bottom: 0.25rem;
 }
 
-.field input {
+.field input,
+.field select {
 	background: var(--surface);
 	border: 1px solid var(--border);
 	padding: 0.7rem 1rem;
 	border-radius: 0.25rem;
 	outline: none;
-	font-size: 1rem;
+	font-size: 0.9rem;
 	color: var(--text);
 	width: 100%;
 }
 
+.field select {
+	color: var(--text-muted);
+}
+
+.field option {
+	color: var(--text);
+}
+
 .field input::placeholder {
 	color: var(--text-muted);
+}
+
+.field:nth-of-type(1) {
+	flex: 1;
+}
+
+.field input[type='number'] {
+	width: 90px;
+}
+
+.field input[type='number']::-webkit-outer-spin-button,
+.field input[type='number']::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
 }
 
 .filter-bar {
@@ -268,6 +288,12 @@ header {
 	transition: all 0.2s ease;
 }
 
+.book-card.to-read {
+	.progress-wrap {
+		display: none;
+	}
+}
+
 .book-card.done {
 	opacity: 0.8;
 
@@ -313,19 +339,29 @@ header {
 	border: none;
 }
 
-.card-body .title {
+.card-body {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.title {
 	font-size: 1.15rem;
 	color: var(--text);
 	line-height: 1.4;
 }
 
-.card-body .author {
+.author {
 	color: var(--text-soft);
 	margin-bottom: 0.6rem;
 }
 
-.card-body .author span {
+.author span {
 	color: var(--text-muted);
+}
+
+.progress-wrap {
+	margin-bottom: 1rem;
 }
 
 .progress-label {
@@ -368,7 +404,7 @@ header {
 	margin: 0;
 }
 
-.hidden {
+.hidden-page-input {
 	opacity: 0;
 	pointer-events: none;
 	position: absolute;
@@ -388,7 +424,7 @@ header {
 }
 
 .card-actions {
-	margin-top: 1.25rem;
+	margin-top: auto;
 	display: flex;
 	gap: 0.5rem;
 }
@@ -458,4 +494,8 @@ header {
 .status-btn.done {
 	background: var(--green);
 	color: var(--surface);
+}
+
+.hidden {
+	display: none;
 }

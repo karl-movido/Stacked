@@ -38,7 +38,7 @@
 						</svg>
 						<input type="text" placeholder="Search title or author" />
 					</div>
-					<button class="btn btn-primary">
+					<button class="btn btn-primary" id="add-book">
 						<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
 							<title xmlns="">add-line</title>
 							<g fill="none">
@@ -57,7 +57,7 @@
 			</div>
 		</header>
 
-		<div class="add-panel">
+		<div class="add-panel hidden" id="add-panel">
 			<form action="" class="add-panel-inner">
 				<div class="field">
 					<label for="titleInput">Title</label>
@@ -65,14 +65,26 @@
 				</div>
 				<div class="field">
 					<label for="authorInput">Author</label>
-					<input type="text" id="titleInput" placeholder="e.g. J.K. Rowling" required />
+					<input type="text" id="authorInput" placeholder="e.g. J.K. Rowling" required />
 				</div>
 				<div class="field">
 					<label for="pagesInput">Pages</label>
 					<input type="number" id="pagesInput" min="1" placeholder="364" required />
 				</div>
-				<button type="submit" class="btn btn-primary">Add to shelf</button>
-				<button type="button" class="btn btn-ghost">Cancel</button>
+				<div class="field">
+					<label for="statusInput">Status</label>
+					<select name="status" id="statusInput" required>
+						<option value="to-read">To read</option>
+						<option value="reading">Reading</option>
+						<option value="done">Done</option>
+					</select>
+				</div>
+				<div class="field">
+					<label for="pagesRead">Pages Read</label>
+					<input type="number" id="pagesRead" min="1" placeholder="120" required />
+				</div>
+				<button type="button" class="btn btn-primary" id="add-to-shelf">Add to shelf</button>
+				<button type="button" class="btn btn-ghost" id="add-cancel">Cancel</button>
 			</form>
 		</div>
 
@@ -87,7 +99,7 @@
 
 		<main>
 			<div class="shelf">
-				<article class="book-card pinned">
+				<article class="book-card pinned to-read">
 					<div class="pin-border"></div>
 					<div class="card-top">
 						<button class="edit-btn">
@@ -464,5 +476,7 @@
 				</article>
 			</div>
 		</main>
+
+		<script src="script.js"></script>
 	</body>
 </html>
