@@ -39,6 +39,7 @@ const filterTab = $('filter-bar');
 const bookCard = $('book-card');
 const statusBtn = $('status-btn');
 const pageDisplay = $('page-display');
+const searchInput = $('search-input');
 const shelf = document.getElementById('shelf');
 
 // Form elements
@@ -50,6 +51,7 @@ const pagesRead = document.getElementById('pagesRead');
 
 let activeFilter = 'all';
 let editingBookId = null;
+let searchQuery = '';
 
 // ----- HANDLERS -----
 
@@ -106,10 +108,18 @@ filterTab.addEventListener('click', (event) => {
 	displayBooks(getFilteredBooks(activeFilter));
 });
 
+searchInput.addEventListener('input', () => {
+	searchQuery = searchInput.value.trim().toLowerCase();
+
+	renderApp();
+});
+
 // ------ MAIN FUNCTIONS -------
 
 function renderApp() {
-	displayBooks(getFilteredBooks());
+	const filteredBooks = getFilteredBooks(activeFilter);
+	const searchedBooks = searchBooks(filteredBooks);
+	displayBooks(searchedBooks);
 	updateCounters();
 }
 
@@ -384,6 +394,12 @@ function updateBook(id, bookData) {
 
 	saveToLocalStorage();
 	renderApp();
+}
+
+function searchBooks(books) {
+	return books.filter(
+		(book) => book.title.toLowerCase().includes(searchQuery) || book.author.toLowerCase().includes(searchQuery),
+	);
 }
 
 // ----- HELPERS -----
