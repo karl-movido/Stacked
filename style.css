@@ -1,6 +1,6 @@
 :root {
 	--bg: #f7faf1;
-	--surface: #f8f9fa;
+	--surface: #f6fff8;
 	--border: #c9ccc4;
 	--text: #1b263b;
 	--text-soft: #2a3c5c;
@@ -125,6 +125,13 @@ header {
 	border-radius: 2rem;
 	color: var(--bg);
 	font-weight: 600;
+	font-size: 1rem;
+}
+
+.btn-primary svg {
+	width: 18px;
+	height: 18px;
+	color: var(--surface);
 }
 
 .btn-primary:hover {
@@ -271,8 +278,8 @@ header {
 	margin: 0 auto;
 	padding: 0 2rem;
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	grid-auto-rows: 1fr;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	grid-auto-rows: 1fr 1fr;
 	gap: 1rem;
 }
 
@@ -280,7 +287,7 @@ header {
 	padding: 1.5rem;
 	background: var(--surface);
 	border-radius: 0.4rem;
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 	display: flex;
 	flex-direction: column;
 	gap: 0.2rem;
@@ -291,6 +298,10 @@ header {
 .book-card.to-read {
 	.progress-wrap {
 		display: none;
+	}
+
+	.author {
+		margin-bottom: 1.5rem;
 	}
 }
 
@@ -310,14 +321,29 @@ header {
 	}
 }
 
-.book-card.pinned .pin-border {
-	position: absolute;
-	left: 0;
-	top: 0;
-	background: var(--pink);
-	height: 100%;
-	width: 10px;
-	border-radius: 0.4rem 0 0 0.4rem;
+.book-card.pinned {
+	.pin-border {
+		position: absolute;
+		left: 0;
+		top: 0;
+		background: var(--pink);
+		height: 100%;
+		width: 10px;
+		border-radius: 0.4rem 0 0 0.4rem;
+	}
+
+	.pin-btn {
+		border: 1px solid var(--border);
+	}
+
+	.pin-btn svg {
+		color: var(--pink);
+		fill: var(--pink);
+	}
+
+	.pin-btn:hover {
+		border-color: var(--pink);
+	}
 }
 
 .book-card:hover {
@@ -327,7 +353,6 @@ header {
 .book-card svg {
 	width: 20px;
 	height: 20px;
-	color: var(--text-soft);
 }
 
 .card-top {
@@ -337,6 +362,12 @@ header {
 .edit-btn {
 	background: none;
 	border: none;
+	color: var(--text-soft);
+	transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+	color: var(--primary);
 }
 
 .card-body {
@@ -346,12 +377,13 @@ header {
 }
 
 .title {
-	font-size: 1.15rem;
+	font-size: 1.2rem;
 	color: var(--text);
-	line-height: 1.4;
+	line-height: 1.2;
 }
 
 .author {
+	font-size: 0.9rem;
 	color: var(--text-soft);
 	margin-bottom: 0.6rem;
 }
@@ -436,7 +468,7 @@ header {
 .pin-btn,
 .done-btn {
 	background: none;
-	border: 1px solid var(--border);
+	border: 1px dashed var(--border);
 	border-radius: 50%;
 	padding: 0.5rem;
 	display: flex;
@@ -444,25 +476,16 @@ header {
 	justify-content: center;
 	cursor: pointer;
 	transition: all 0.2s ease;
-}
-
-.pin-btn {
-	border: 1px dashed var(--border);
+	color: var(--text-soft);
 }
 
 .pin-btn:hover {
 	border-color: var(--pink);
-}
-
-.pin-btn:hover svg {
 	color: var(--pink);
 }
 
 .done-btn:hover {
 	border-color: var(--green);
-}
-
-.done-btn:hover svg {
 	color: var(--green);
 }
 
@@ -471,6 +494,7 @@ header {
 	padding: 0 1.4rem;
 	flex: 1;
 	border-radius: 2rem;
+	font-size: 0.9rem;
 	font-family: inherit;
 	font-weight: 500;
 	cursor: pointer;
@@ -478,7 +502,7 @@ header {
 }
 
 .status-btn:hover {
-	filter: brightness(0.95);
+	filter: brightness(0.85);
 }
 
 .status-btn.to-read {
