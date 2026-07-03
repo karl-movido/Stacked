@@ -4,7 +4,7 @@ const myLibrary = JSON.parse(localStorage.getItem('books')) || [
 		title: 'The Housekeeper and the Professor',
 		author: 'Yoko Ogawa',
 		pages: 180,
-		currentPage: 67,
+		pagesRead: 143,
 		status: 'reading',
 		pinned: true,
 	},
@@ -13,7 +13,7 @@ const myLibrary = JSON.parse(localStorage.getItem('books')) || [
 		title: 'The Hobbit',
 		author: 'J.R.R. Tolkien',
 		pages: 295,
-		currentPage: 0,
+		pagesRead: 0,
 		status: 'to-read',
 		pinned: false,
 	},
@@ -36,23 +36,74 @@ const cancelBtn = $('add-cancel');
 const addPanel = $('add-panel');
 const addToShelf = $('add-to-shelf');
 const filterTab = $('filter-bar');
+const bookCard = $('book-card');
+const shelf = document.getElementById('shelf');
+
+// Form elements
+const titleInput = document.getElementById('titleInput');
+const authorInput = document.getElementById('authorInput');
+const pagesInput = document.getElementById('pagesInput');
+const statusInput = document.getElementById('statusInput');
+const pagesRead = document.getElementById('pagesRead');
 
 let activeFilter = 'all';
+let formState = 'add';
 
 // Toggle add panel
 addBookBtn.addEventListener('click', () => {
-	addPanel.classList.toggle('hidden');
+	addPanel.classList.remove('hidden');
+	addToShelf.innerText = 'Add to shelf';
+	resetForm();
 });
 
 cancelBtn.addEventListener('click', () => {
 	addPanel.classList.add('hidden');
+	addToShelf.innerText = 'Add to shelf';
+	document.querySelectorAll('.book-card').forEach((card) => {
+		card.classList.remove('selected');
+	});
+
+	resetForm();
 });
 
 // Add to shelf handler
 addToShelf.addEventListener('click', () => {
 	addBookToLibrary();
-	console.log(myLibrary);
+	displayBooks(getFilteredBooks(activeFilter));
+	updateCounters();
 });
+
+function handleCardContainerClick(event) {
+	const editBtn = event.target.closest('.edit-btn');
+	if (editBtn) {
+		const card = editBtn.closest('.book-card');
+		if (!card) return;
+
+		const targetId = card.getAttribute('data-id');
+		const cardIndex = myLibrary.findIndex((item) => item.id === targetId);
+		if (cardIndex === -1) return;
+
+		addPanel.classList.remove('hidden');
+
+		const book = myLibrary.find((book) => book.id === targetId);
+
+		// Assign book property values into the form
+		titleInput.value = book.title;
+		authorInput.value = book.author;
+		pagesInput.value = book.pages;
+		statusInput.value = book.status;
+		pagesRead.value = book.pagesRead;
+
+		// Update button text to "Update"
+		addToShelf.innerText = 'Update';
+
+		document.querySelectorAll('.book-card').forEach((card) => {
+			card.classList.remove('selected');
+		});
+
+		card.classList.add('selected');
+	}
+}
 
 // Filter tab click handler
 filterTab.addEventListener('click', (event) => {
@@ -86,12 +137,6 @@ filterTab.addEventListener('click', (event) => {
 
 // Construct book and add to library
 function addBookToLibrary() {
-	const titleInput = document.getElementById('titleInput');
-	const authorInput = document.getElementById('authorInput');
-	const pagesInput = document.getElementById('pagesInput');
-	const statusInput = document.getElementById('statusInput');
-	const pagesRead = document.getElementById('pagesRead');
-
 	const book = new Book(
 		titleInput.value,
 		authorInput.value,
@@ -102,18 +147,13 @@ function addBookToLibrary() {
 
 	myLibrary.push(book);
 
-	titleInput.value = '';
-	authorInput.value = '';
-	pagesInput.value = '';
-	statusInput.selectedIndex = 0;
-	pagesRead.value = '';
+	resetForm();
 
 	localStorage.setItem('books', JSON.stringify(myLibrary));
 }
 
 // Display cards on the shelf
 function displayBooks(books) {
-	const shelf = document.getElementById('shelf');
 	shelf.innerHTML = '';
 
 	books.forEach((book) => {
@@ -131,6 +171,7 @@ function createBookCard(book) {
 	const card = document.createElement('article');
 
 	card.classList.add('book-card');
+	card.setAttribute('data-id', book.id);
 
 	if (book.pinned) {
 		card.classList.add('pinned');
@@ -138,12 +179,12 @@ function createBookCard(book) {
 
 	card.classList.add(book.status);
 
-	const progress = Math.round((book.currentPage / book.pages) * 100);
+	const progress = Math.round((book.pagesRead / book.pages) * 100);
 
 	card.innerHTML = `
 		<div class="pin-border"></div>
 		<div class="card-top">
-			<button class="edit-btn">
+			<button class="edit-btn" id="edit-btn">
 				<i data-lucide="square-pen"></i>
 			</button>
 		</div>
@@ -154,12 +195,12 @@ function createBookCard(book) {
 				<div class="progress-label">
 					Page
 					<span class="page-editor">
-						<button class="page-display" id="pageDisplay">${book.currentPage}</button>
-						<input type="number" class="current-page-input hidden" id="pageInput" value="${book.currentPage}" min="0" max="${book.pages}" />
+						<button class="page-display" id="pageDisplay">${book.pagesRead}</button>
+						<input type="number" class="current-page-input hidden" id="pageInput" value="${book.pagesRead}" min="0" max="${book.pages}" />
 					</span>
 					of ${book.pages} pages
 				</div>
-				<div class="progress-bar"><div class="progress-bar-fill" style="width: ${progress}%"></div></div>
+				<div class="progress-bar"><div class="progress-bar-fill" style="width: ${progress}%"></div></div>	
 			</div>
 			<div class="card-actions">
 				<button class="pin-btn">
@@ -176,6 +217,7 @@ function createBookCard(book) {
 	return card;
 }
 
+// Get books according to filter
 function getFilteredBooks(filter) {
 	switch (filter) {
 		case 'pinned':
@@ -209,6 +251,7 @@ function formatStatus(status) {
 	}
 }
 
+// Update counters on filter tabs
 function updateCounters() {
 	const countAll = $('allCounter');
 	const countPinned = $('pinnedCounter');
@@ -230,6 +273,17 @@ function updateCounters() {
 	if (countReading) countReading.innerText = totalReading;
 	if (countDone) countDone.innerText = totalDone;
 }
+
+// Helper to reset form values
+function resetForm() {
+	titleInput.value = '';
+	authorInput.value = '';
+	pagesInput.value = '';
+	statusInput.selectedIndex = 0;
+	pagesRead.value = '';
+}
+
+shelf.addEventListener('click', handleCardContainerClick);
 
 displayBooks(getFilteredBooks(activeFilter));
 updateCounters();

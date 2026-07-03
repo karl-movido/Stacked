@@ -197,10 +197,6 @@ header {
 	width: 100%;
 }
 
-.field select {
-	color: var(--text-muted);
-}
-
 .field option {
 	color: var(--text);
 }
@@ -231,9 +227,9 @@ header {
 
 .filter-bar-inner {
 	display: inline-flex;
-	gap: 0.5rem;
 	border-radius: 0.5rem;
-	border: 1px solid var(--border);
+	background: var(--surface);
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .filter-tab {
@@ -291,13 +287,19 @@ header {
 .book-card {
 	padding: 1.5rem;
 	background: var(--surface);
-	border-radius: 0.4rem;
+	border-radius: 0.5rem;
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 	display: flex;
 	flex-direction: column;
 	gap: 0.2rem;
 	position: relative;
 	transition: all 0.2s ease;
+	outline: 2px solid transparent;
+}
+
+.book-card.selected {
+	outline-color: var(--primary);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .book-card.to-read {
@@ -335,6 +337,7 @@ header {
 		height: 100%;
 		width: 10px;
 		border-radius: 0.4rem 0 0 0.4rem;
+		z-index: 99;
 	}
 
 	.pin-btn {
@@ -352,7 +355,7 @@ header {
 }
 
 .book-card:hover {
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .book-card svg {
