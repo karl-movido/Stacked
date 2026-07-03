@@ -37,6 +37,7 @@ const addPanel = $('add-panel');
 const addToShelf = $('add-to-shelf');
 const filterTab = $('filter-bar');
 const bookCard = $('book-card');
+const statusBtn = $('status-btn');
 const shelf = document.getElementById('shelf');
 
 // Form elements
@@ -106,6 +107,11 @@ filterTab.addEventListener('click', (event) => {
 
 // ------ MAIN FUNCTIONS -------
 
+function renderApp() {
+	displayBooks(getFilteredBooks());
+	updateCounters();
+}
+
 // Handle action buttons within cards
 function handleCardContainerClick(event) {
 	// Edit button
@@ -151,6 +157,31 @@ function handleCardContainerClick(event) {
 		}
 
 		togglePinnned(targetId);
+	}
+
+	// Done button
+	const doneBtn = event.target.closest('.done-btn');
+	if (doneBtn) {
+		const card = doneBtn.closest('.book-card');
+		if (!card) return;
+
+		const targetId = card.getAttribute('data-id');
+
+		const book = myLibrary.find((book) => book.id === targetId);
+
+		toggleDone(targetId);
+	}
+
+	// Status button
+	const statusBtn = event.target.closest('.status-btn');
+	if (statusBtn) {
+		const card = statusBtn.closest('.book-card');
+		if (!card) return;
+
+		const targetId = card.getAttribute('data-id');
+
+		const book = myLibrary.find((book) => book.id === targetId);
+		toggleReadingStatus(targetId);
 	}
 }
 
@@ -253,7 +284,7 @@ function createBookCard(book) {
 				<button class="done-btn">
 					<i data-lucide="check"></i>
 				</button>
-				<button class="status-btn ${book.status}">${formatStatus(book.status)}</button>
+				<button class="status-btn ${book.status}" id="status-btn">${formatStatus(book.status)}</button>
 			</div>
 		</div>
 	`;
@@ -293,6 +324,7 @@ function updateBook(id, bookData) {
 	book.pagesRead = bookData.pagesRead;
 
 	saveToLocalStorage();
+	renderApp();
 }
 
 // ----- HELPERS -----
@@ -316,8 +348,7 @@ function submitForm() {
 
 	saveToLocalStorage();
 
-	displayBooks(getFilteredBooks());
-	updateCounters();
+	renderApp();
 	resetForm();
 	closeFormPanel();
 }
@@ -385,21 +416,63 @@ function updateCounters() {
 	if (countDone) countDone.innerText = totalDone;
 }
 
+// Toggle pin button
 function togglePinnned(id) {
 	const book = myLibrary.find((book) => book.id === id);
 
 	book.pinned = !book.pinned;
 
 	saveToLocalStorage();
+	renderApp();
 }
 
+function toggleDone(id) {
+	const book = myLibrary.find((book) => book.id === id);
+
+	if (book.status === 'done') {
+		book.status = 'reading';
+	} else {
+		book.status = 'done';
+		updateProgressBar(id);
+	}
+
+	saveToLocalStorage();
+	renderApp();
+}
+
+function toggleReadingStatus(id) {
+	const book = myLibrary.find((book) => book.id === id);
+
+	if (book.status === 'done') {
+		book.status = 'reading';
+	} else if (book.status === 'reading') {
+		book.status = 'to-read';
+	} else {
+		book.status = 'reading';
+	}
+
+	saveToLocalStorage();
+	renderApp();
+}
+
+function updateProgressBar(id) {
+	const book = myLibrary.find((book) => book.id === id);
+
+	if (book.status === 'done') {
+		book.pagesRead = book.pages;
+	}
+
+	saveToLocalStorage();
+	renderApp();
+}
+
+// Save to localStorage
 function saveToLocalStorage() {
 	localStorage.setItem('books', JSON.stringify(myLibrary));
 }
 
 shelf.addEventListener('click', handleCardContainerClick);
 
-displayBooks(getFilteredBooks(activeFilter));
-updateCounters();
+renderApp();
 
 lucide.createIcons();

@@ -326,6 +326,10 @@ header {
 	.progress-bar-fill {
 		background: var(--green);
 	}
+
+	.done-btn {
+		display: none;
+	}
 }
 
 .book-card.pinned {
