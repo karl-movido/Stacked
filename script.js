@@ -47,28 +47,30 @@ const statusInput = document.getElementById('statusInput');
 const pagesRead = document.getElementById('pagesRead');
 
 let activeFilter = 'all';
-let formState = 'add';
+let editingBookId = null;
 
 // Toggle add panel
 addBookBtn.addEventListener('click', () => {
-	addPanel.classList.remove('hidden');
+	openFormPanel();
 	addToShelf.innerText = 'Add to shelf';
 	resetForm();
 });
 
 cancelBtn.addEventListener('click', () => {
-	addPanel.classList.add('hidden');
+	closeFormPanel();
 	addToShelf.innerText = 'Add to shelf';
 	document.querySelectorAll('.book-card').forEach((card) => {
 		card.classList.remove('selected');
 	});
+
+	editingBookId = null;
 
 	resetForm();
 });
 
 // Add to shelf handler
 addToShelf.addEventListener('click', () => {
-	addBookToLibrary();
+	submitForm();
 	displayBooks(getFilteredBooks(activeFilter));
 	updateCounters();
 });
@@ -80,23 +82,18 @@ function handleCardContainerClick(event) {
 		if (!card) return;
 
 		const targetId = card.getAttribute('data-id');
-		const cardIndex = myLibrary.findIndex((item) => item.id === targetId);
-		if (cardIndex === -1) return;
 
-		addPanel.classList.remove('hidden');
+		openFormPanel();
 
 		const book = myLibrary.find((book) => book.id === targetId);
 
 		// Assign book property values into the form
-		titleInput.value = book.title;
-		authorInput.value = book.author;
-		pagesInput.value = book.pages;
-		statusInput.value = book.status;
-		pagesRead.value = book.pagesRead;
+		populateForm(book);
+
+		editingBookId = book.id;
 
 		// Update button text to "Update"
 		addToShelf.innerText = 'Update';
-
 		document.querySelectorAll('.book-card').forEach((card) => {
 			card.classList.remove('selected');
 		});
@@ -111,9 +108,6 @@ filterTab.addEventListener('click', (event) => {
 	if (!tab) return;
 
 	const targetTab = tab.getAttribute('data-view');
-
-	console.log(targetTab);
-	console.log(activeFilter);
 
 	if (targetTab === 'all') {
 		activeFilter = 'all';
@@ -136,13 +130,13 @@ filterTab.addEventListener('click', (event) => {
 });
 
 // Construct book and add to library
-function addBookToLibrary() {
+function addBookToLibrary(bookData) {
 	const book = new Book(
-		titleInput.value,
-		authorInput.value,
-		Number(pagesInput.value),
-		statusInput.value,
-		Number(pagesRead.value),
+		bookData.title,
+		bookData.author,
+		Number(bookData.pages),
+		bookData.status,
+		Number(bookData.pagesRead),
 	);
 
 	myLibrary.push(book);
@@ -265,13 +259,52 @@ function updateCounters() {
 	const totalReading = getFilteredBooks('reading').length;
 	const totalDone = getFilteredBooks('done').length;
 
-	console.log(totalBooks);
-
 	if (countAll) countAll.innerText = totalBooks;
 	if (countPinned) countPinned.innerText = totalPinned;
 	if (countToRead) countToRead.innerText = totalToRead;
 	if (countReading) countReading.innerText = totalReading;
 	if (countDone) countDone.innerText = totalDone;
+}
+
+// Update values of selected book
+function updateBook(id, bookData) {
+	const book = myLibrary.find((book) => book.id === id);
+	if (!book) return;
+
+	book.title = bookData.title;
+	book.author = bookData.author;
+	book.pages = bookData.pages;
+	book.status = bookData.status;
+	book.pagesRead = bookData.pagesRead;
+
+	localStorage.setItem('books', JSON.stringify(myLibrary));
+}
+
+// Helper to decide whether to add or update
+function submitForm() {
+	const bookData = {
+		title: titleInput.value,
+		author: authorInput.value,
+		pages: Number(pagesInput.value),
+		status: statusInput.value,
+		pagesRead: Number(pagesRead.value),
+	};
+
+	if (editingBookId === null) {
+		addBookToLibrary(bookData);
+	} else {
+		updateBook(editingBookId, bookData);
+		editingBookId = null;
+	}
+
+	localStorage.setItem('books', JSON.stringify(myLibrary));
+
+	console.log(myLibrary);
+
+	displayBooks(getFilteredBooks());
+	updateCounters();
+	resetForm();
+	closeFormPanel();
 }
 
 // Helper to reset form values
@@ -281,6 +314,22 @@ function resetForm() {
 	pagesInput.value = '';
 	statusInput.selectedIndex = 0;
 	pagesRead.value = '';
+}
+
+function populateForm(book) {
+	titleInput.value = book.title;
+	authorInput.value = book.author;
+	pagesInput.value = book.pages;
+	statusInput.value = book.status;
+	pagesRead.value = book.pagesRead;
+}
+
+function openFormPanel() {
+	addPanel.classList.remove('hidden');
+}
+
+function closeFormPanel() {
+	addPanel.classList.add('hidden');
 }
 
 shelf.addEventListener('click', handleCardContainerClick);
