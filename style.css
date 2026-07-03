@@ -416,11 +416,18 @@ header {
 	transition: all 0.2s ease;
 }
 
+.page-display.hidden {
+	opacity: 0;
+	pointer-events: none;
+	position: absolute;
+}
+
 .page-display:hover {
 	border-color: var(--primary);
 }
 
 .current-page-input {
+	background: none;
 	padding: 0 0.25rem;
 	font-family: inherit;
 	font-size: 0.8rem;
@@ -428,7 +435,6 @@ header {
 	border: none;
 	outline: none;
 	border-bottom: 1px solid var(--border);
-	border-radius: 0.25rem;
 	color: var(--text-soft);
 }
 
@@ -438,10 +444,38 @@ header {
 	margin: 0;
 }
 
-.hidden-page-input {
+.page-edit {
+	display: inline-flex;
+	gap: 0.3rem;
+	padding: 0 0.5rem;
+}
+
+.page-edit.hidden {
 	opacity: 0;
 	pointer-events: none;
 	position: absolute;
+}
+
+.confirm-edit {
+	background: none;
+	border: none;
+	font-family: inherit;
+	font-size: 0.8rem;
+	cursor: pointer;
+	border-bottom: 1px solid var(--surface);
+	transition: all 0.2s ease;
+}
+
+.confirm-edit.update {
+	color: var(--primary);
+}
+
+.confirm-edit.cancel {
+	color: var(--pink);
+}
+
+.confirm-edit:hover {
+	text-decoration: underline;
 }
 
 .progress-wrap {

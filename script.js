@@ -38,12 +38,13 @@ const addToShelf = $('add-to-shelf');
 const filterTab = $('filter-bar');
 const bookCard = $('book-card');
 const statusBtn = $('status-btn');
+const pageDisplay = $('page-display');
 const shelf = document.getElementById('shelf');
 
 // Form elements
 const titleInput = document.getElementById('titleInput');
 const authorInput = document.getElementById('authorInput');
-const pagesInput = document.getElementById('pagesInput');
+
 const statusInput = document.getElementById('statusInput');
 const pagesRead = document.getElementById('pagesRead');
 
@@ -184,6 +185,59 @@ function handleCardContainerClick(event) {
 		toggleReadingStatus(targetId);
 		updateProgressBar(targetId);
 	}
+
+	const pageDisplay = event.target.closest('.page-display');
+	if (pageDisplay) {
+		const card = pageDisplay.closest('.book-card');
+		if (!card) return;
+
+		const targetId = card.getAttribute('data-id');
+		const book = myLibrary.find((book) => book.id === targetId);
+
+		const pageEditor = pageDisplay.closest('.page-editor');
+		const pageEdit = pageEditor.querySelector('.page-edit');
+		const pageInput = pageEditor.querySelector('.current-page-input');
+
+		pageDisplay.classList.add('hidden');
+		pageEdit.classList.remove('hidden');
+
+		pageInput.value = book.pagesRead;
+	}
+
+	const confirmPage = event.target.closest('.confirm-edit.update');
+	if (confirmPage) {
+		const card = confirmPage.closest('.book-card');
+		if (!card) return;
+
+		const targetId = card.getAttribute('data-id');
+		const book = myLibrary.find((book) => book.id === targetId);
+
+		const pageEditor = confirmPage.closest('.page-editor');
+		const pageEdit = pageEditor.querySelector('.page-edit');
+		const pageDisplay = pageEditor.querySelector('.page-display');
+		const pageInput = pageEditor.querySelector('.current-page-input');
+
+		updatePage(targetId, pageInput.value);
+
+		pageDisplay.classList.remove('hidden');
+		pageEdit.classList.add('hidden');
+	}
+
+	const cancelPage = event.target.closest('.confirm-edit.cancel');
+	if (cancelPage) {
+		const card = cancelPage.closest('.book-card');
+		if (!card) return;
+
+		const targetId = card.getAttribute('data-id');
+		const book = myLibrary.find((book) => book.id === targetId);
+
+		const pageEditor = cancelPage.closest('.page-editor');
+		const pageEdit = pageEditor.querySelector('.page-edit');
+		const pageDisplay = pageEditor.querySelector('.page-display');
+
+		pageDisplay.classList.remove('hidden');
+		pageEdit.classList.add('hidden');
+	}
 }
 
 // Construct book and add to library
@@ -271,8 +325,12 @@ function createBookCard(book) {
 				<div class="progress-label">
 					Page
 					<span class="page-editor">
-						<button class="page-display" id="pageDisplay">${book.pagesRead}</button>
-						<input type="number" class="current-page-input hidden" id="pageInput" value="${book.pagesRead}" min="0" max="${book.pages}" />
+						<button class="page-display " id="pageDisplay">${book.pagesRead}</button>
+						<span class="page-edit hidden" id="page-edit">
+							<input type="number" class="current-page-input" id="pageInput" value="${book.pagesRead}" min="0" max="${book.pages}" />
+							<button class="confirm-edit update" >Confirm</button>
+							<button class="confirm-edit cancel" >Cancel</button>
+						</span>
 					</span>
 					of ${book.pages} pages
 				</div>
@@ -464,6 +522,15 @@ function updateProgressBar(id) {
 	} else if (book.status === 'to-read') {
 		book.pagesRead = 0;
 	}
+
+	saveToLocalStorage();
+	renderApp();
+}
+
+function updatePage(id, value) {
+	const book = myLibrary.find((book) => book.id === id);
+
+	book.pagesRead = value;
 
 	saveToLocalStorage();
 	renderApp();
