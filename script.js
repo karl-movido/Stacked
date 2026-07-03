@@ -49,6 +49,8 @@ const pagesRead = document.getElementById('pagesRead');
 let activeFilter = 'all';
 let editingBookId = null;
 
+// ----- HANDLERS -----
+
 // Toggle add panel
 addBookBtn.addEventListener('click', () => {
 	openFormPanel();
@@ -74,33 +76,6 @@ addToShelf.addEventListener('click', () => {
 	displayBooks(getFilteredBooks(activeFilter));
 	updateCounters();
 });
-
-function handleCardContainerClick(event) {
-	const editBtn = event.target.closest('.edit-btn');
-	if (editBtn) {
-		const card = editBtn.closest('.book-card');
-		if (!card) return;
-
-		const targetId = card.getAttribute('data-id');
-
-		openFormPanel();
-
-		const book = myLibrary.find((book) => book.id === targetId);
-
-		// Assign book property values into the form
-		populateForm(book);
-
-		editingBookId = book.id;
-
-		// Update button text to "Update"
-		addToShelf.innerText = 'Update';
-		document.querySelectorAll('.book-card').forEach((card) => {
-			card.classList.remove('selected');
-		});
-
-		card.classList.add('selected');
-	}
-}
 
 // Filter tab click handler
 filterTab.addEventListener('click', (event) => {
@@ -129,6 +104,56 @@ filterTab.addEventListener('click', (event) => {
 	displayBooks(getFilteredBooks(activeFilter));
 });
 
+// ------ MAIN FUNCTIONS -------
+
+// Handle action buttons within cards
+function handleCardContainerClick(event) {
+	// Edit button
+	const editBtn = event.target.closest('.edit-btn');
+	if (editBtn) {
+		const card = editBtn.closest('.book-card');
+		if (!card) return;
+
+		const targetId = card.getAttribute('data-id');
+
+		openFormPanel();
+
+		const book = myLibrary.find((book) => book.id === targetId);
+
+		// Assign book property values into the form
+		populateForm(book);
+
+		editingBookId = book.id;
+
+		// Update button text to "Update"
+		addToShelf.innerText = 'Update';
+		document.querySelectorAll('.book-card').forEach((card) => {
+			card.classList.remove('selected');
+		});
+
+		card.classList.add('selected');
+	}
+
+	// Bookmark button
+	const pinBtn = event.target.closest('.pin-btn');
+	if (pinBtn) {
+		const card = pinBtn.closest('.book-card');
+		if (!card) return;
+
+		const targetId = card.getAttribute('data-id');
+
+		const book = myLibrary.find((book) => book.id === targetId);
+
+		if (card.classList.contains('pinned')) {
+			card.classList.remove('pinned');
+		} else {
+			card.classList.add('pinned');
+		}
+
+		togglePinnned(targetId);
+	}
+}
+
 // Construct book and add to library
 function addBookToLibrary(bookData) {
 	const book = new Book(
@@ -143,7 +168,32 @@ function addBookToLibrary(bookData) {
 
 	resetForm();
 
-	localStorage.setItem('books', JSON.stringify(myLibrary));
+	// Filter tab click handler
+	filterTab.addEventListener('click', (event) => {
+		const tab = event.target.closest('.filter-tab');
+		if (!tab) return;
+
+		const targetTab = tab.getAttribute('data-view');
+
+		if (targetTab === 'all') {
+			activeFilter = 'all';
+		} else if (targetTab === 'pinned') {
+			activeFilter = 'pinned';
+		} else if (targetTab === 'to-read') {
+			activeFilter = 'to-read';
+		} else if (targetTab === 'reading') {
+			activeFilter = 'reading';
+		} else if (targetTab === 'done') {
+			activeFilter = 'done';
+		}
+		document.querySelectorAll('.filter-tab').forEach((tab) => {
+			tab.classList.remove('active');
+		});
+
+		tab.classList.add('active');
+
+		displayBooks(getFilteredBooks(activeFilter));
+	});
 }
 
 // Display cards on the shelf
@@ -231,6 +281,75 @@ function getFilteredBooks(filter) {
 	}
 }
 
+// Update values of selected book
+function updateBook(id, bookData) {
+	const book = myLibrary.find((book) => book.id === id);
+	if (!book) return;
+
+	book.title = bookData.title;
+	book.author = bookData.author;
+	book.pages = bookData.pages;
+	book.status = bookData.status;
+	book.pagesRead = bookData.pagesRead;
+
+	saveToLocalStorage();
+}
+
+// ----- HELPERS -----
+
+// Helper to decide whether to add or update
+function submitForm() {
+	const bookData = {
+		title: titleInput.value,
+		author: authorInput.value,
+		pages: Number(pagesInput.value),
+		status: statusInput.value,
+		pagesRead: Number(pagesRead.value),
+	};
+
+	if (editingBookId === null) {
+		addBookToLibrary(bookData);
+	} else {
+		updateBook(editingBookId, bookData);
+		editingBookId = null;
+	}
+
+	saveToLocalStorage();
+
+	displayBooks(getFilteredBooks());
+	updateCounters();
+	resetForm();
+	closeFormPanel();
+}
+
+// Helper to reset form values
+function resetForm() {
+	titleInput.value = '';
+	authorInput.value = '';
+	pagesInput.value = '';
+	statusInput.selectedIndex = 0;
+	pagesRead.value = '';
+}
+
+// Assign currently selected book properties to the form
+function populateForm(book) {
+	titleInput.value = book.title;
+	authorInput.value = book.author;
+	pagesInput.value = book.pages;
+	statusInput.value = book.status;
+	pagesRead.value = book.pagesRead;
+}
+
+// Open the add panel
+function openFormPanel() {
+	addPanel.classList.remove('hidden');
+}
+
+// Close the add panel
+function closeFormPanel() {
+	addPanel.classList.add('hidden');
+}
+
 // Format helper for status button
 function formatStatus(status) {
 	switch (status) {
@@ -266,70 +385,16 @@ function updateCounters() {
 	if (countDone) countDone.innerText = totalDone;
 }
 
-// Update values of selected book
-function updateBook(id, bookData) {
+function togglePinnned(id) {
 	const book = myLibrary.find((book) => book.id === id);
-	if (!book) return;
 
-	book.title = bookData.title;
-	book.author = bookData.author;
-	book.pages = bookData.pages;
-	book.status = bookData.status;
-	book.pagesRead = bookData.pagesRead;
+	book.pinned = !book.pinned;
 
+	saveToLocalStorage();
+}
+
+function saveToLocalStorage() {
 	localStorage.setItem('books', JSON.stringify(myLibrary));
-}
-
-// Helper to decide whether to add or update
-function submitForm() {
-	const bookData = {
-		title: titleInput.value,
-		author: authorInput.value,
-		pages: Number(pagesInput.value),
-		status: statusInput.value,
-		pagesRead: Number(pagesRead.value),
-	};
-
-	if (editingBookId === null) {
-		addBookToLibrary(bookData);
-	} else {
-		updateBook(editingBookId, bookData);
-		editingBookId = null;
-	}
-
-	localStorage.setItem('books', JSON.stringify(myLibrary));
-
-	console.log(myLibrary);
-
-	displayBooks(getFilteredBooks());
-	updateCounters();
-	resetForm();
-	closeFormPanel();
-}
-
-// Helper to reset form values
-function resetForm() {
-	titleInput.value = '';
-	authorInput.value = '';
-	pagesInput.value = '';
-	statusInput.selectedIndex = 0;
-	pagesRead.value = '';
-}
-
-function populateForm(book) {
-	titleInput.value = book.title;
-	authorInput.value = book.author;
-	pagesInput.value = book.pages;
-	statusInput.value = book.status;
-	pagesRead.value = book.pagesRead;
-}
-
-function openFormPanel() {
-	addPanel.classList.remove('hidden');
-}
-
-function closeFormPanel() {
-	addPanel.classList.add('hidden');
 }
 
 shelf.addEventListener('click', handleCardContainerClick);

@@ -400,16 +400,6 @@ header {
 	color: var(--text-muted);
 }
 
-.progress-wrap {
-	margin-bottom: 1rem;
-}
-
-.progress-label {
-	font-size: 0.8rem;
-	color: var(--text-soft);
-	margin-bottom: 0.25rem;
-}
-
 .page-display {
 	background: none;
 	border: none;
@@ -448,6 +438,17 @@ header {
 	opacity: 0;
 	pointer-events: none;
 	position: absolute;
+}
+
+.progress-wrap {
+	margin-top: auto;
+	margin-bottom: 1rem;
+}
+
+.progress-label {
+	font-size: 0.8rem;
+	color: var(--text-soft);
+	margin-bottom: 0.25rem;
 }
 
 .progress-bar {
