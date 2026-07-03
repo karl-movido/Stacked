@@ -26,11 +26,18 @@ body {
 	color: var(--text);
 	font-family: 'DM sans', sans-serif;
 	font-size: 16px;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
 }
 
 header {
 	background: var(--surface);
 	border-bottom: 2px solid var(--border);
+}
+
+main {
+	flex: 1;
 }
 
 .header-inner {
@@ -569,4 +576,23 @@ header {
 
 .hidden {
 	display: none;
+}
+
+footer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 0.25rem;
+}
+
+footer p {
+	font-size: 0.8rem;
+	display: flex;
+	gap: 0.5rem;
+}
+
+footer svg {
+	width: 18px;
+	height: 18px;
+	color: var(--text-muted);
 }
