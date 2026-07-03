@@ -35,6 +35,8 @@ const addPanel = document.getElementById('add-panel');
 const addToShelf = document.getElementById('add-to-shelf');
 const filterTab = document.getElementById('filter-bar');
 
+let activeFilter = 'all';
+
 // Toggle add panel
 addBookBtn.addEventListener('click', () => {
 	addPanel.classList.toggle('hidden');
@@ -50,17 +52,34 @@ addToShelf.addEventListener('click', () => {
 	console.log(myLibrary);
 });
 
-// Filter tab handler`
+// Filter tab click handler
 filterTab.addEventListener('click', (event) => {
 	const tab = event.target.closest('.filter-tab');
 	if (!tab) return;
 
 	const targetTab = tab.getAttribute('data-view');
+
+	console.log(targetTab);
+	console.log(activeFilter);
+
+	if (targetTab === 'all') {
+		activeFilter = 'all';
+	} else if (targetTab === 'pinned') {
+		activeFilter = 'pinned';
+	} else if (targetTab === 'to-read') {
+		activeFilter = 'to-read';
+	} else if (targetTab === 'reading') {
+		activeFilter = 'reading';
+	} else if (targetTab === 'done') {
+		activeFilter = 'done';
+	}
 	document.querySelectorAll('.filter-tab').forEach((tab) => {
 		tab.classList.remove('active');
 	});
 
 	tab.classList.add('active');
+
+	displayBooks(getFilteredBooks());
 });
 
 // Construct book and add to library
@@ -91,14 +110,16 @@ function addBookToLibrary() {
 }
 
 // Display cards on the shelf
-function displayBooks() {
+function displayBooks(books) {
 	const shelf = document.getElementById('shelf');
 	shelf.innerHTML = '';
 
-	myLibrary.forEach((book) => {
+	books.forEach((book) => {
 		const card = createBookCard(book);
 		shelf.appendChild(card);
 	});
+
+	lucide.createIcons();
 }
 
 // Create card for books
@@ -151,6 +172,25 @@ function createBookCard(book) {
 	return card;
 }
 
+function getFilteredBooks() {
+	switch (activeFilter) {
+		case 'pinned':
+			return myLibrary.filter((book) => book.pinned);
+
+		case 'to-read':
+			return myLibrary.filter((book) => book.status === 'to-read');
+
+		case 'reading':
+			return myLibrary.filter((book) => book.status === 'reading');
+
+		case 'done':
+			return myLibrary.filter((book) => book.status === 'done');
+
+		default:
+			return myLibrary;
+	}
+}
+
 // Format helper for status button
 function formatStatus(status) {
 	switch (status) {
@@ -165,6 +205,6 @@ function formatStatus(status) {
 	}
 }
 
-displayBooks();
+displayBooks(getFilteredBooks());
 
 lucide.createIcons();
