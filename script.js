@@ -182,6 +182,7 @@ function handleCardContainerClick(event) {
 
 		const book = myLibrary.find((book) => book.id === targetId);
 		toggleReadingStatus(targetId);
+		updateProgressBar(targetId);
 	}
 }
 
@@ -460,6 +461,8 @@ function updateProgressBar(id) {
 
 	if (book.status === 'done') {
 		book.pagesRead = book.pages;
+	} else if (book.status === 'to-read') {
+		book.pagesRead = 0;
 	}
 
 	saveToLocalStorage();
