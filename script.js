@@ -33,6 +33,7 @@ const addBookBtn = document.getElementById('add-book');
 const cancelBtn = document.getElementById('add-cancel');
 const addPanel = document.getElementById('add-panel');
 const addToShelf = document.getElementById('add-to-shelf');
+const filterTab = document.getElementById('filter-bar');
 
 // Toggle add panel
 addBookBtn.addEventListener('click', () => {
@@ -41,6 +42,25 @@ addBookBtn.addEventListener('click', () => {
 
 cancelBtn.addEventListener('click', () => {
 	addPanel.classList.add('hidden');
+});
+
+// Add to shelf handler
+addToShelf.addEventListener('click', () => {
+	addBookToLibrary();
+	console.log(myLibrary);
+});
+
+// Filter tab handler`
+filterTab.addEventListener('click', (event) => {
+	const tab = event.target.closest('.filter-tab');
+	if (!tab) return;
+
+	const targetTab = tab.getAttribute('data-view');
+	document.querySelectorAll('.filter-tab').forEach((tab) => {
+		tab.classList.remove('active');
+	});
+
+	tab.classList.add('active');
 });
 
 // Construct book and add to library
@@ -69,12 +89,6 @@ function addBookToLibrary() {
 
 	localStorage.setItem('books', JSON.stringify(myLibrary));
 }
-
-// Add to shelf handler
-addToShelf.addEventListener('click', () => {
-	addBookToLibrary();
-	console.log(myLibrary);
-});
 
 // Display cards on the shelf
 function displayBooks() {
