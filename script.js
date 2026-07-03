@@ -29,11 +29,13 @@ function Book(title, author, pages, status, pagesRead) {
 	this.pinned = false;
 }
 
-const addBookBtn = document.getElementById('add-book');
-const cancelBtn = document.getElementById('add-cancel');
-const addPanel = document.getElementById('add-panel');
-const addToShelf = document.getElementById('add-to-shelf');
-const filterTab = document.getElementById('filter-bar');
+const $ = (id) => document.getElementById(id);
+
+const addBookBtn = $('add-book');
+const cancelBtn = $('add-cancel');
+const addPanel = $('add-panel');
+const addToShelf = $('add-to-shelf');
+const filterTab = $('filter-bar');
 
 let activeFilter = 'all';
 
@@ -79,7 +81,7 @@ filterTab.addEventListener('click', (event) => {
 
 	tab.classList.add('active');
 
-	displayBooks(getFilteredBooks());
+	displayBooks(getFilteredBooks(activeFilter));
 });
 
 // Construct book and add to library
@@ -118,6 +120,8 @@ function displayBooks(books) {
 		const card = createBookCard(book);
 		shelf.appendChild(card);
 	});
+
+	updateCounters();
 
 	lucide.createIcons();
 }
@@ -172,8 +176,8 @@ function createBookCard(book) {
 	return card;
 }
 
-function getFilteredBooks() {
-	switch (activeFilter) {
+function getFilteredBooks(filter) {
+	switch (filter) {
 		case 'pinned':
 			return myLibrary.filter((book) => book.pinned);
 
@@ -205,6 +209,29 @@ function formatStatus(status) {
 	}
 }
 
-displayBooks(getFilteredBooks());
+function updateCounters() {
+	const countAll = $('allCounter');
+	const countPinned = $('pinnedCounter');
+	const countToRead = $('tbrCounter');
+	const countReading = $('readingCounter');
+	const countDone = $('doneCounter');
+
+	const totalBooks = myLibrary.length;
+	const totalPinned = getFilteredBooks('pinned').length;
+	const totalToRead = getFilteredBooks('to-read').length;
+	const totalReading = getFilteredBooks('reading').length;
+	const totalDone = getFilteredBooks('done').length;
+
+	console.log(totalBooks);
+
+	if (countAll) countAll.innerText = totalBooks;
+	if (countPinned) countPinned.innerText = totalPinned;
+	if (countToRead) countToRead.innerText = totalToRead;
+	if (countReading) countReading.innerText = totalReading;
+	if (countDone) countDone.innerText = totalDone;
+}
+
+displayBooks(getFilteredBooks(activeFilter));
+updateCounters();
 
 lucide.createIcons();
