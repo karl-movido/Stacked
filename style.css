@@ -376,9 +376,12 @@ main {
 
 .card-top {
 	margin-left: auto;
+	display: flex;
+	gap: 0.8rem;
 }
 
-.edit-btn {
+.edit-btn,
+.del-btn {
 	background: none;
 	border: none;
 	color: var(--text-soft);
@@ -387,6 +390,10 @@ main {
 
 .edit-btn:hover {
 	color: var(--primary);
+}
+
+.del-btn:hover {
+	color: var(--pink);
 }
 
 .card-body {

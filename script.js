@@ -108,6 +108,7 @@ filterTab.addEventListener('click', (event) => {
 	displayBooks(getFilteredBooks(activeFilter));
 });
 
+// Search query
 searchInput.addEventListener('input', () => {
 	searchQuery = searchInput.value.trim().toLowerCase();
 
@@ -116,6 +117,7 @@ searchInput.addEventListener('input', () => {
 
 // ------ MAIN FUNCTIONS -------
 
+// Render app
 function renderApp() {
 	const filteredBooks = getFilteredBooks(activeFilter);
 	const searchedBooks = searchBooks(filteredBooks);
@@ -178,8 +180,6 @@ function handleCardContainerClick(event) {
 
 		const targetId = card.getAttribute('data-id');
 
-		const book = myLibrary.find((book) => book.id === targetId);
-
 		toggleDone(targetId);
 	}
 
@@ -191,7 +191,6 @@ function handleCardContainerClick(event) {
 
 		const targetId = card.getAttribute('data-id');
 
-		const book = myLibrary.find((book) => book.id === targetId);
 		toggleReadingStatus(targetId);
 		updateProgressBar(targetId);
 	}
@@ -200,9 +199,6 @@ function handleCardContainerClick(event) {
 	if (pageDisplay) {
 		const card = pageDisplay.closest('.book-card');
 		if (!card) return;
-
-		const targetId = card.getAttribute('data-id');
-		const book = myLibrary.find((book) => book.id === targetId);
 
 		const pageEditor = pageDisplay.closest('.page-editor');
 		const pageEdit = pageEditor.querySelector('.page-edit');
@@ -218,9 +214,6 @@ function handleCardContainerClick(event) {
 	if (confirmPage) {
 		const card = confirmPage.closest('.book-card');
 		if (!card) return;
-
-		const targetId = card.getAttribute('data-id');
-		const book = myLibrary.find((book) => book.id === targetId);
 
 		const pageEditor = confirmPage.closest('.page-editor');
 		const pageEdit = pageEditor.querySelector('.page-edit');
@@ -238,15 +231,21 @@ function handleCardContainerClick(event) {
 		const card = cancelPage.closest('.book-card');
 		if (!card) return;
 
-		const targetId = card.getAttribute('data-id');
-		const book = myLibrary.find((book) => book.id === targetId);
-
 		const pageEditor = cancelPage.closest('.page-editor');
 		const pageEdit = pageEditor.querySelector('.page-edit');
 		const pageDisplay = pageEditor.querySelector('.page-display');
 
 		pageDisplay.classList.remove('hidden');
 		pageEdit.classList.add('hidden');
+	}
+
+	const delBtn = event.target.closest('.del-btn');
+	if (delBtn) {
+		const card = delBtn.closest('.book-card');
+
+		const targetId = card.getAttribute('data-id');
+
+		deleteBook(targetId);
 	}
 }
 
@@ -324,6 +323,9 @@ function createBookCard(book) {
 	card.innerHTML = `
 		<div class="pin-border"></div>
 		<div class="card-top">
+			<button class="del-btn" id="del-btn">
+				<i data-lucide="trash"></i>
+			</button>
 			<button class="edit-btn" id="edit-btn">
 				<i data-lucide="square-pen"></i>
 			</button>
@@ -547,6 +549,15 @@ function updatePage(id, value) {
 	const book = myLibrary.find((book) => book.id === id);
 
 	book.pagesRead = value;
+
+	saveToLocalStorage();
+	renderApp();
+}
+
+function deleteBook(id) {
+	const bookIndex = myLibrary.findIndex((book) => book.id === id);
+
+	myLibrary.splice(bookIndex, 1);
 
 	saveToLocalStorage();
 	renderApp();
