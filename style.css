@@ -587,6 +587,7 @@ main {
 
 footer {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	margin-bottom: 0.25rem;
@@ -602,4 +603,14 @@ footer svg {
 	width: 18px;
 	height: 18px;
 	color: var(--text-muted);
+}
+
+footer a {
+	text-decoration: none;
+	font-size: 0.8rem;
+	color: var(--primary);
+}
+
+footer a:hover {
+	text-decoration: underline;
 }

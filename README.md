@@ -32,5 +32,5 @@ A simple browser-based book library app for tracking your reading list. Add book
 
 ## Notes
 
-- The app was inspired by The Odin Project.
+- The app was inspired and made for The Odin Project.
 - The app uses `lucide` icons from a CDN for UI icons.
