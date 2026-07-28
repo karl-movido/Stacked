@@ -19,14 +19,16 @@ const myLibrary = JSON.parse(localStorage.getItem('books')) || [
 	},
 ];
 
-function Book(title, author, pages, status, pagesRead) {
-	this.id = crypto.randomUUID();
-	this.title = title;
-	this.author = author;
-	this.pages = pages;
-	this.status = status;
-	this.pagesRead = pagesRead;
-	this.pinned = false;
+class Book {
+	constructor(title, author, pages, status, pagesRead) {
+		this.id = crypto.randomUUID();
+		this.title = title;
+		this.author = author;
+		this.pages = pages;
+		this.status = status;
+		this.pagesRead = pagesRead;
+		this.pinned = false;
+	}
 }
 
 const $ = (id) => document.getElementById(id);
