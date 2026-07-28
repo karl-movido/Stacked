@@ -49,7 +49,7 @@ const savedBooks = JSON.parse(localStorage.getItem('books'));
 
 const myLibrary = savedBooks
 	? savedBooks.map((book) => {
-			new Book(book.title, book.author, book.pages, book.status, book.pagesRead, book.pinned, book.id);
+			return new Book(book.title, book.author, book.pages, book.status, book.pagesRead, book.pinned, book.id);
 		})
 	: [
 			new Book('The Housekeeper and the Professor', 'Yoko Ogawa', 180, 'reading', 143, true),
@@ -306,33 +306,6 @@ function addBookToLibrary(bookData) {
 	myLibrary.push(book);
 
 	resetForm();
-
-	// Filter tab click handler
-	filterTab.addEventListener('click', (event) => {
-		const tab = event.target.closest('.filter-tab');
-		if (!tab) return;
-
-		const targetTab = tab.getAttribute('data-view');
-
-		if (targetTab === 'all') {
-			activeFilter = 'all';
-		} else if (targetTab === 'pinned') {
-			activeFilter = 'pinned';
-		} else if (targetTab === 'to-read') {
-			activeFilter = 'to-read';
-		} else if (targetTab === 'reading') {
-			activeFilter = 'reading';
-		} else if (targetTab === 'done') {
-			activeFilter = 'done';
-		}
-		document.querySelectorAll('.filter-tab').forEach((tab) => {
-			tab.classList.remove('active');
-		});
-
-		tab.classList.add('active');
-
-		displayBooks(getFilteredBooks(activeFilter));
-	});
 }
 
 // Display cards on the shelf
