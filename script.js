@@ -1,35 +1,60 @@
-const myLibrary = JSON.parse(localStorage.getItem('books')) || [
-	{
-		id: crypto.randomUUID(),
-		title: 'The Housekeeper and the Professor',
-		author: 'Yoko Ogawa',
-		pages: 180,
-		pagesRead: 143,
-		status: 'reading',
-		pinned: true,
-	},
-	{
-		id: crypto.randomUUID(),
-		title: 'The Hobbit',
-		author: 'J.R.R. Tolkien',
-		pages: 295,
-		pagesRead: 0,
-		status: 'to-read',
-		pinned: false,
-	},
-];
-
 class Book {
-	constructor(title, author, pages, status, pagesRead) {
-		this.id = crypto.randomUUID();
+	constructor(title, author, pages, status, pagesRead, pinned = false, id = crypto.randomUUID()) {
+		this.id = id;
 		this.title = title;
 		this.author = author;
 		this.pages = pages;
 		this.status = status;
 		this.pagesRead = pagesRead;
-		this.pinned = false;
+		this.pinned = pinned;
+	}
+
+	togglePinned() {
+		this.pinned = !this.pinned;
+	}
+
+	toggleDone() {
+		if (this.status === 'done') {
+			this.status = 'reading';
+		} else {
+			this.status = 'done';
+			this.updateProgressBar();
+		}
+	}
+
+	toggleReadingStatus() {
+		if (this.status === 'done') {
+			this.status = 'reading';
+		} else if (this.status === 'reading') {
+			this.status = 'to-read';
+		} else {
+			this.status = 'reading';
+		}
+	}
+
+	updateProgressBar() {
+		if (this.status === 'done') {
+			this.pagesRead = this.pages;
+		} else if (this.status === 'to-read') {
+			this.pagesRead = 0;
+		}
+	}
+
+	updatePage(value) {
+		this.pagesRead = Number(value);
 	}
 }
+
+const savedBooks = JSON.parse(localStorage.getItem('books'));
+
+const myLibrary = savedBooks
+	? savedBooks.map((book) => {
+			new Book(book.title, book.author, book.pages, book.status, book.pagesRead, book.pinned, book.id);
+		})
+	: [
+			new Book('The Housekeeper and the Professor', 'Yoko Ogawa', 180, 'reading', 143, true),
+			new Book('The Hobbit', 'J.R.R. Tolkien', 295, 'to-read', 0),
+		];
 
 const $ = (id) => document.getElementById(id);
 
@@ -165,13 +190,10 @@ function handleCardContainerClick(event) {
 
 		const book = myLibrary.find((book) => book.id === targetId);
 
-		if (card.classList.contains('pinned')) {
-			card.classList.remove('pinned');
-		} else {
-			card.classList.add('pinned');
-		}
+		book.togglePinned();
 
-		togglePinnned(targetId);
+		saveToLocalStorage();
+		renderApp();
 	}
 
 	// Done button
@@ -182,7 +204,12 @@ function handleCardContainerClick(event) {
 
 		const targetId = card.getAttribute('data-id');
 
-		toggleDone(targetId);
+		const book = myLibrary.find((book) => book.id === targetId);
+
+		book.toggleDone();
+
+		saveToLocalStorage();
+		renderApp();
 	}
 
 	// Status button
@@ -193,8 +220,13 @@ function handleCardContainerClick(event) {
 
 		const targetId = card.getAttribute('data-id');
 
-		toggleReadingStatus(targetId);
-		updateProgressBar(targetId);
+		const book = myLibrary.find((book) => book.id === targetId);
+
+		book.toggleReadingStatus();
+		book.updateProgressBar();
+
+		saveToLocalStorage();
+		renderApp();
 	}
 
 	const pageDisplay = event.target.closest('.page-display');
@@ -205,6 +237,9 @@ function handleCardContainerClick(event) {
 		const pageEditor = pageDisplay.closest('.page-editor');
 		const pageEdit = pageEditor.querySelector('.page-edit');
 		const pageInput = pageEditor.querySelector('.current-page-input');
+
+		const targetId = card.getAttribute('data-id');
+		const book = myLibrary.find((book) => book.id === targetId);
 
 		pageDisplay.classList.add('hidden');
 		pageEdit.classList.remove('hidden');
@@ -222,10 +257,17 @@ function handleCardContainerClick(event) {
 		const pageDisplay = pageEditor.querySelector('.page-display');
 		const pageInput = pageEditor.querySelector('.current-page-input');
 
-		updatePage(targetId, pageInput.value);
+		const targetId = card.getAttribute('data-id');
+
+		const book = myLibrary.find((book) => book.id === targetId);
+
+		book.updatePage(pageInput.value);
 
 		pageDisplay.classList.remove('hidden');
 		pageEdit.classList.add('hidden');
+
+		saveToLocalStorage();
+		renderApp();
 	}
 
 	const cancelPage = event.target.closest('.confirm-edit.cancel');
@@ -496,65 +538,6 @@ function updateCounters() {
 }
 
 // Toggle pin button
-function togglePinnned(id) {
-	const book = myLibrary.find((book) => book.id === id);
-
-	book.pinned = !book.pinned;
-
-	saveToLocalStorage();
-	renderApp();
-}
-
-function toggleDone(id) {
-	const book = myLibrary.find((book) => book.id === id);
-
-	if (book.status === 'done') {
-		book.status = 'reading';
-	} else {
-		book.status = 'done';
-		updateProgressBar(id);
-	}
-
-	saveToLocalStorage();
-	renderApp();
-}
-
-function toggleReadingStatus(id) {
-	const book = myLibrary.find((book) => book.id === id);
-
-	if (book.status === 'done') {
-		book.status = 'reading';
-	} else if (book.status === 'reading') {
-		book.status = 'to-read';
-	} else {
-		book.status = 'reading';
-	}
-
-	saveToLocalStorage();
-	renderApp();
-}
-
-function updateProgressBar(id) {
-	const book = myLibrary.find((book) => book.id === id);
-
-	if (book.status === 'done') {
-		book.pagesRead = book.pages;
-	} else if (book.status === 'to-read') {
-		book.pagesRead = 0;
-	}
-
-	saveToLocalStorage();
-	renderApp();
-}
-
-function updatePage(id, value) {
-	const book = myLibrary.find((book) => book.id === id);
-
-	book.pagesRead = value;
-
-	saveToLocalStorage();
-	renderApp();
-}
 
 function deleteBook(id) {
 	const bookIndex = myLibrary.findIndex((book) => book.id === id);
