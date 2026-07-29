@@ -56,6 +56,74 @@ const myLibrary = savedBooks
 			new Book('The Hobbit', 'J.R.R. Tolkien', 295, 'to-read', 0),
 		];
 
+class Library {
+	constructor(books = []) {
+		this.books = books;
+	}
+
+	deleteBook(id) {
+		const bookIndex = this.books.findIndex((book) => book.id === id);
+
+		if (bookIndex !== 1) {
+			this.books.splice(bookIndex, 1);
+		}
+	}
+
+	findBook(id) {
+		return this.books.find((book) => book.id === id);
+	}
+
+	addBook(bookData) {
+		const book = new Book(
+			bookData.title,
+			bookData.author,
+			Number(bookData.pages),
+			bookData.status,
+			Number(bookData.pagesRead),
+		);
+
+		this.books.push(book);
+	}
+
+	updateBook(id, bookData) {
+		const book = library.findBook(id);
+		if (!book) return;
+
+		book.title = bookData.title;
+		book.author = bookData.author;
+		book.pages = Number(bookData.pages);
+		book.status = bookData.status;
+		book.pagesRead = Number(bookData.pagesRead);
+	}
+
+	searchBooks(books, query) {
+		return books.filter(
+			(book) => book.title.toLowerCase().includes(query) || book.author.toLowerCase().includes(query),
+		);
+	}
+
+	getFilteredBooks(filter) {
+		switch (filter) {
+			case 'pinned':
+				return this.books.filter((book) => book.pinned);
+
+			case 'to-read':
+				return this.books.filter((book) => book.status === 'to-read');
+
+			case 'reading':
+				return this.books.filter((book) => book.status === 'reading');
+
+			case 'done':
+				return this.books.filter((book) => book.status === 'done');
+
+			default:
+				return this.books;
+		}
+	}
+}
+
+const library = new Library(myLibrary);
+
 const $ = (id) => document.getElementById(id);
 
 const addBookBtn = $('add-book');
@@ -104,8 +172,8 @@ cancelBtn.addEventListener('click', () => {
 // Add to shelf handler
 addToShelf.addEventListener('click', () => {
 	submitForm();
-	displayBooks(getFilteredBooks(activeFilter));
 	updateCounters();
+	renderApp();
 });
 
 // Filter tab click handler
@@ -132,7 +200,7 @@ filterTab.addEventListener('click', (event) => {
 
 	tab.classList.add('active');
 
-	displayBooks(getFilteredBooks(activeFilter));
+	renderApp();
 });
 
 // Search query
@@ -146,8 +214,8 @@ searchInput.addEventListener('input', () => {
 
 // Render app
 function renderApp() {
-	const filteredBooks = getFilteredBooks(activeFilter);
-	const searchedBooks = searchBooks(filteredBooks);
+	const filteredBooks = library.getFilteredBooks(activeFilter);
+	const searchedBooks = library.searchBooks(filteredBooks, searchQuery);
 	displayBooks(searchedBooks);
 	updateCounters();
 }
@@ -164,7 +232,7 @@ function handleCardContainerClick(event) {
 
 		openFormPanel();
 
-		const book = myLibrary.find((book) => book.id === targetId);
+		const book = library.findBook(targetId);
 
 		// Assign book property values into the form
 		populateForm(book);
@@ -188,7 +256,7 @@ function handleCardContainerClick(event) {
 
 		const targetId = card.getAttribute('data-id');
 
-		const book = myLibrary.find((book) => book.id === targetId);
+		const book = library.findBook(targetId);
 
 		book.togglePinned();
 
@@ -204,7 +272,7 @@ function handleCardContainerClick(event) {
 
 		const targetId = card.getAttribute('data-id');
 
-		const book = myLibrary.find((book) => book.id === targetId);
+		const book = library.findBook(targetId);
 
 		book.toggleDone();
 
@@ -220,7 +288,7 @@ function handleCardContainerClick(event) {
 
 		const targetId = card.getAttribute('data-id');
 
-		const book = myLibrary.find((book) => book.id === targetId);
+		const book = library.findBook(targetId);
 
 		book.toggleReadingStatus();
 		book.updateProgressBar();
@@ -239,7 +307,7 @@ function handleCardContainerClick(event) {
 		const pageInput = pageEditor.querySelector('.current-page-input');
 
 		const targetId = card.getAttribute('data-id');
-		const book = myLibrary.find((book) => book.id === targetId);
+		const book = library.findBook(targetId);
 
 		pageDisplay.classList.add('hidden');
 		pageEdit.classList.remove('hidden');
@@ -259,7 +327,7 @@ function handleCardContainerClick(event) {
 
 		const targetId = card.getAttribute('data-id');
 
-		const book = myLibrary.find((book) => book.id === targetId);
+		const book = library.findBook(targetId);
 
 		book.updatePage(pageInput.value);
 
@@ -289,23 +357,11 @@ function handleCardContainerClick(event) {
 
 		const targetId = card.getAttribute('data-id');
 
-		deleteBook(targetId);
+		library.deleteBook(targetId);
+
+		saveToLocalStorage();
+		renderApp();
 	}
-}
-
-// Construct book and add to library
-function addBookToLibrary(bookData) {
-	const book = new Book(
-		bookData.title,
-		bookData.author,
-		Number(bookData.pages),
-		bookData.status,
-		Number(bookData.pagesRead),
-	);
-
-	myLibrary.push(book);
-
-	resetForm();
 }
 
 // Display cards on the shelf
@@ -380,47 +436,6 @@ function createBookCard(book) {
 	return card;
 }
 
-// Get books according to filter
-function getFilteredBooks(filter) {
-	switch (filter) {
-		case 'pinned':
-			return myLibrary.filter((book) => book.pinned);
-
-		case 'to-read':
-			return myLibrary.filter((book) => book.status === 'to-read');
-
-		case 'reading':
-			return myLibrary.filter((book) => book.status === 'reading');
-
-		case 'done':
-			return myLibrary.filter((book) => book.status === 'done');
-
-		default:
-			return myLibrary;
-	}
-}
-
-// Update values of selected book
-function updateBook(id, bookData) {
-	const book = myLibrary.find((book) => book.id === id);
-	if (!book) return;
-
-	book.title = bookData.title;
-	book.author = bookData.author;
-	book.pages = bookData.pages;
-	book.status = bookData.status;
-	book.pagesRead = bookData.pagesRead;
-
-	saveToLocalStorage();
-	renderApp();
-}
-
-function searchBooks(books) {
-	return books.filter(
-		(book) => book.title.toLowerCase().includes(searchQuery) || book.author.toLowerCase().includes(searchQuery),
-	);
-}
-
 // ----- HELPERS -----
 
 // Helper to decide whether to add or update
@@ -434,14 +449,13 @@ function submitForm() {
 	};
 
 	if (editingBookId === null) {
-		addBookToLibrary(bookData);
+		library.addBook(bookData);
 	} else {
-		updateBook(editingBookId, bookData);
+		library.updateBook(editingBookId, bookData);
 		editingBookId = null;
 	}
 
 	saveToLocalStorage();
-
 	renderApp();
 	resetForm();
 	closeFormPanel();
@@ -497,11 +511,11 @@ function updateCounters() {
 	const countReading = $('readingCounter');
 	const countDone = $('doneCounter');
 
-	const totalBooks = myLibrary.length;
-	const totalPinned = getFilteredBooks('pinned').length;
-	const totalToRead = getFilteredBooks('to-read').length;
-	const totalReading = getFilteredBooks('reading').length;
-	const totalDone = getFilteredBooks('done').length;
+	const totalBooks = library.books.length;
+	const totalPinned = library.getFilteredBooks('pinned').length;
+	const totalToRead = library.getFilteredBooks('to-read').length;
+	const totalReading = library.getFilteredBooks('reading').length;
+	const totalDone = library.getFilteredBooks('done').length;
 
 	if (countAll) countAll.innerText = totalBooks;
 	if (countPinned) countPinned.innerText = totalPinned;
@@ -510,20 +524,9 @@ function updateCounters() {
 	if (countDone) countDone.innerText = totalDone;
 }
 
-// Toggle pin button
-
-function deleteBook(id) {
-	const bookIndex = myLibrary.findIndex((book) => book.id === id);
-
-	myLibrary.splice(bookIndex, 1);
-
-	saveToLocalStorage();
-	renderApp();
-}
-
 // Save to localStorage
 function saveToLocalStorage() {
-	localStorage.setItem('books', JSON.stringify(myLibrary));
+	localStorage.setItem('books', JSON.stringify(library.books));
 }
 
 shelf.addEventListener('click', handleCardContainerClick);
